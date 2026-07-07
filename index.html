@@ -459,7 +459,7 @@ function render(){
   var h='';
   for(var pi=0;pi<ps.length;pi++){
     var p=ps[pi], d=S[p.k];
-    var has = d.s.length>0;
+    var has = d.s.length + d.m.length + d.w.length > 0;
     h+='<div class="player-card '+p.cls+'">';
     h+='<div class="ph"><span class="pn">'+p.l+'</span>';
     h+='</div><div class="pb">';
