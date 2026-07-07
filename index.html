@@ -51,6 +51,36 @@
   }
   .pool-stat strong { color: #e2e8f0; }
   
+  .pool-config {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    padding: 10px 16px;
+    border-bottom: 1px solid #1e293b;
+    flex-wrap: wrap;
+  }
+  .pool-config-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+  }
+  .pool-config-item .label { color: #94a3b8; }
+  .pool-config-item input {
+    width: 40px;
+    padding: 4px 6px;
+    border: 1px solid #1e293b;
+    border-radius: 6px;
+    background: #141b2d;
+    color: #e2e8f0;
+    font-family: inherit;
+    font-size: 13px;
+    text-align: center;
+    outline: none;
+  }
+  .pool-config-item input:focus { border-color: #818cf8; }
+  .pool-config-item input::-webkit-inner-spin-button { opacity: 1; }
+
   .controls {
     display: flex;
     justify-content: center;
@@ -244,13 +274,31 @@
 
 <div class="header">
   <h1>🦗 边狱巴士 · 斗蛐蛐</h1>
-  <div class="sub">强池×2 + 中池×2 + 弱池×1 &nbsp;·&nbsp; 点击角色可交换重抽</div>
+  <div class="sub">自定义从三个池子抽卡 &nbsp;·&nbsp; 点击角色可交换重抽</div>
 </div>
 
 <div class="pool-stats">
   <span class="pool-stat">🟢 强力池 <strong id="sc">33</strong>人</span>
   <span class="pool-stat">🟡 中等池 <strong id="mc">71</strong>人</span>
   <span class="pool-stat">🔴 弱池 <strong id="wc">14</strong>人</span>
+</div>
+
+<div class="pool-config" id="poolConfig">
+  <div class="pool-config-item">
+    <span class="label">🟢 强力池</span>
+    <input type="number" id="cntS" value="2" min="0" max="33">
+    <span class="label">人</span>
+  </div>
+  <div class="pool-config-item">
+    <span class="label">🟡 中等池</span>
+    <input type="number" id="cntM" value="2" min="0" max="71">
+    <span class="label">人</span>
+  </div>
+  <div class="pool-config-item">
+    <span class="label">🔴 弱池</span>
+    <input type="number" id="cntW" value="1" min="0" max="14">
+    <span class="label">人</span>
+  </div>
 </div>
 
 <div class="controls">
@@ -356,17 +404,28 @@ function sample(arr, n, r){
 // ═══════════ STATE ═══════════
 var S = { seed:0, you:{s:[],m:[],w:[]}, friend:{s:[],m:[],w:[]}, swaps:{you:[],friend:[]} };
 
-function doDraw(seed){
+function getCounts(){
+  var cs = parseInt(document.getElementById('cntS').value) || 0;
+  var cm = parseInt(document.getElementById('cntM').value) || 0;
+  var cw = parseInt(document.getElementById('cntW').value) || 0;
+  return {s:cs, m:cm, w:cw};
+}
+
+function doDraw(seed, counts){
   var r=rng(seed), rf=rng(seed+9999);
   return {
-    you:{s:sample(SI,2,r), m:sample(MI,2,r), w:sample(WI,1,r)},
-    friend:{s:sample(SI,2,rf), m:sample(MI,2,rf), w:sample(WI,1,rf)}
+    you:{s:sample(SI,counts.s,r), m:sample(MI,counts.m,r), w:sample(WI,counts.w,r)},
+    friend:{s:sample(SI,counts.s,rf), m:sample(MI,counts.m,rf), w:sample(WI,counts.w,rf)}
   };
 }
 
 function draw(){
+  var counts = getCounts();
+  if(counts.s+counts.m+counts.w === 0){
+    toast('⚠️ 至少选一个池子抽1人'); return;
+  }
   var seed = Math.floor(Math.random()*99999999);
-  var r=doDraw(seed);
+  var r=doDraw(seed, counts);
   S.seed=seed; S.you=r.you; S.friend=r.friend; S.swaps={you:[],friend:[]};
   render();
   toast('🎲 抽卡完成！');
@@ -407,9 +466,13 @@ function render(){
     if(!has){
       h+='<div class="empty-msg">点击上方「抽卡」开始</div>';
     } else {
-      h+=renderGroup('s','🟢 强力池 ×2',d.s,p.k);
-      h+=renderGroup('m','🟡 中等池 ×2',d.m,p.k);
-      h+=renderGroup('w','🔴 弱池 ×1',d.w,p.k);
+      var cnt = getCounts();
+      var ss = d.s.length ? '🟢 强力池 ×'+d.s.length : '';
+      var ms = d.m.length ? '🟡 中等池 ×'+d.m.length : '';
+      var ws = d.w.length ? '🔴 弱池 ×'+d.w.length : '';
+      if(ss) h+=renderGroup('s',ss,d.s,p.k);
+      if(ms) h+=renderGroup('m',ms,d.m,p.k);
+      if(ws) h+=renderGroup('w',ws,d.w,p.k);
     }
     h+='</div></div>';
   }
