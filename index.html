@@ -418,7 +418,7 @@ function renderGroup(pool, title, ids, player){
     var badge='';
     h+='<div class="slot '+cls+'" onclick="swap(\''+player+'\',\''+pool+'\',\''+id+'\')">';
     h+='<span class="pi"></span>';
-    h+='<span class="id-badge">'+id+'</span>';
+    h+='<span class="id-badge" onclick="event.stopPropagation();copyId('+id+')">'+id+'</span>';
     h+='<span class="name">'+nm+'</span>';
     h+=badge;
     h+='';
@@ -461,6 +461,15 @@ function initPoolRef(){
     h+='</div></div>';
   }
   c.innerHTML=h;
+}
+
+// ═══════════ CLIPBOARD ═══════════
+function copyId(id){
+  navigator.clipboard.writeText(String(id)).then(function(){
+    toast('📋 已复制 ID: '+id);
+  }).catch(function(){
+    toast('❌ 复制失败');
+  });
 }
 
 // ═══════════ INIT ═══════════
