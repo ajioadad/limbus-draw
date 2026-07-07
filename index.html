@@ -147,6 +147,14 @@
     flex-shrink: 0;
   }
   .slot .name { flex: 1; font-size: 14px; }
+  .sprite {
+    width: 48px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+    background: #0a0f1a;
+  }
 
   .pi {
     width: 4px;
@@ -419,6 +427,7 @@ function renderGroup(pool, title, ids, player){
     h+='<div class="slot '+cls+'" onclick="swap(\''+player+'\',\''+pool+'\',\''+id+'\')">';
     h+='<span class="pi"></span>';
     h+='<span class="id-badge" onclick="event.stopPropagation();copyId('+id+')">'+id+'</span>';
+    h+='<img class="sprite" src="assets/'+id+'.gif" alt="" loading="lazy">';
     h+='<span class="name">'+nm+'</span>';
     h+=badge;
     h+='';
