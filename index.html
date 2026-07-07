@@ -147,16 +147,7 @@
     flex-shrink: 0;
   }
   .slot .name { flex: 1; font-size: 14px; }
-  .swap-badge {
-    font-size: 11px;
-    padding: 2px 8px;
-    border-radius: 6px;
-    background: #818cf8;
-    color: #fff;
-    font-weight: 600;
-    flex-shrink: 0;
-    animation: pop 0.3s ease;
-  }
+
   .pi {
     width: 4px;
     height: 26px;
@@ -186,11 +177,7 @@
     font-size: 14px;
   }
   
-  @keyframes pop {
-    0% { transform: scale(0.5); opacity: 0; }
-    70% { transform: scale(1.15); }
-    100% { transform: scale(1); opacity: 1; }
-  }
+
   
   .toast {
     position: fixed;
@@ -414,19 +401,16 @@ function render(){
   var h='';
   for(var pi=0;pi<ps.length;pi++){
     var p=ps[pi], d=S[p.k];
-    var sw = {};
-    for(var i=0;i<S.swaps[p.k].length;i++){ sw[S.swaps[p.k][i].newId]=true; }
     var has = d.s.length>0;
     h+='<div class="player-card '+p.cls+'">';
     h+='<div class="ph"><span class="pn">'+p.l+'</span>';
-  
     h+='</div><div class="pb">';
     if(!has){
       h+='<div class="empty-msg">点击上方「抽卡」开始</div>';
     } else {
-      h+=renderGroup('s','🟢 强力池 ×2',d.s,p.k,sw);
-      h+=renderGroup('m','🟡 中等池 ×2',d.m,p.k,sw);
-      h+=renderGroup('w','🔴 弱池 ×1',d.w,p.k,sw);
+      h+=renderGroup('s','🟢 强力池 ×2',d.s,p.k);
+      h+=renderGroup('m','🟡 中等池 ×2',d.m,p.k);
+      h+=renderGroup('w','🔴 弱池 ×1',d.w,p.k);
     }
     h+='</div></div>';
   }
@@ -436,12 +420,12 @@ function render(){
   clearCounts();
 }
 
-function renderGroup(pool, title, ids, player, sw){
+function renderGroup(pool, title, ids, player){
   var h='<div class="sg"><div class="sgt">'+title+'</div>';
   for(var i=0;i<ids.length;i++){
     var id=ids[i], nm=P[id]||'未知('+id+')';
     var cls={s:'ss',m:'ms',w:'ws'}[pool];
-    var badge=sw[id]?'<span class="swap-badge">🔁 换</span>':'';
+    var badge='';
     h+='<div class="slot '+cls+'" onclick="swap(\''+player+'\',\''+pool+'\',\''+id+'\')">';
     h+='<span class="pi"></span>';
     h+='<span class="id-badge">'+id+'</span>';
